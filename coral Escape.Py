@@ -28,7 +28,7 @@ moeda_y= (round(randint(320, 630)/ 10.0) * 10.0)
 velocidade_x= 0
 velocidade_y= 0
 Pontos= 0
-Relogio= pygame.time.Clock
+Relogio= pygame.time.Clock()
 tamanho_da_cobra= 3
 pixels= []
 
@@ -58,7 +58,7 @@ def Desenhando_A_Tela():
 
 def desenhar_cobra(tamanho, pixels):
     for pixel in pixels:
-        pygame.draw.rect(tela, cores["branca"],[pixel[0], pixel[1], tamanho, tamanho])
+        pygame.draw.rect(tela, cores["branca"],[pixel[0], pixel[1], 15 , 15])
 
 #Funcionamento do Jogo
 while True:
@@ -72,17 +72,17 @@ while True:
             exit()
         elif event.type == KEYDOWN:
             if event.key == K_d:
-                velocidade_x = 15
+                velocidade_x = 5
                 velocidade_y = 0
             if event.key == K_a:
-                velocidade_x = -15
+                velocidade_x = -5
                 velocidade_y = 0
             if event.key == K_w:
                 velocidade_x = 0
-                velocidade_y-= -15
+                velocidade_y-= 5
             if  event.key== K_s:
                 velocidade_x = 0
-                velocidade_y+= +15
+                velocidade_y+= 5
         
         cobra_x+= velocidade_x
         cobra_y+= velocidade_y
@@ -93,10 +93,10 @@ while True:
 
         desenhar_cobra(tamanho_da_cobra, pixels)
 
-        '''if jogador.colliderect(moedas):
+        '''if pi == moeda_x and moeda_y:
             moeda_x= randint(60, 390)
             moeda_y= randint(320, 630)
-            Pontos+= 1''' 
+            Pontos+= 1'''
     
         #Deixar Pressionado: 
         '''if pygame.key.get_pressed() [K_d]:
@@ -115,7 +115,8 @@ while True:
             print('Uiii')'''
     tela.blit(Mensagem, (250, 200))
 
-    pygame.display.flip()
     pygame.display.update()
+    Relogio.tick(20)
+    
 
     
