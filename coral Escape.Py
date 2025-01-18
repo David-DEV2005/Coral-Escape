@@ -58,10 +58,11 @@ def Desenhando_A_Tela():
 
 def desenhar_cobra(tamanho, pixels):
     for pixel in pixels:
-        pygame.draw.rect(tela, cores["branca"],[pixel[0], pixel[1], 15 , 15])
+        pygame.draw.rect(tela, cores["branca"],[pixel[0], pixel[1], 10 , 10])
 
 #Funcionamento do Jogo
 while True:
+    Relogio.tick(30)
     Desenhando_A_Tela()
     moedas = pygame.draw.rect(tela, cores["amarela"],(moeda_x,moeda_y,10,10))
     msg= f"Pontuação: {Pontos}"
@@ -91,32 +92,16 @@ while True:
         if len(pixels) > tamanho_da_cobra:
             del pixels[0]
 
-        desenhar_cobra(tamanho_da_cobra, pixels)
+        desenhar_cobra(30, pixels)
 
-        '''if pi == moeda_x and moeda_y:
+        if cobra_x == moeda_x and  cobra_y == moeda_y:
             moeda_x= randint(60, 390)
             moeda_y= randint(320, 630)
-            Pontos+= 1'''
+            Pontos+= 1
     
-        #Deixar Pressionado: 
-        '''if pygame.key.get_pressed() [K_d]:
-            cobra_x += 5
-        if pygame.key.get_pressed() [K_a]:
-            cobra_x-= 5
-        if pygame.key.get_pressed() [K_s]:
-            cobra_y+= 5
-        if pygame.key.get_pressed() [K_w]:
-            cobra_y-= 5
-        if cobra_x<=50-5 or cobra_x>=450-5:
-            print('COlidiu')
-        if cobra_y<= 300-5:
-            print('aii')
-        if cobra_y>= 640:
-            print('Uiii')'''
     tela.blit(Mensagem, (250, 200))
-
     pygame.display.update()
-    Relogio.tick(20)
+   
     
 
     
