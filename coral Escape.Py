@@ -21,13 +21,16 @@ tamanho_da_Tela= (500, 700)
 tela= pygame.display.set_mode(tamanho_da_Tela)
 texto=pygame.font.SysFont('arial', 30, True, True)
 pygame.display.set_caption("Coral Escape")
+
+#x E Y da cobra e da Moeda (Movimentação)
 cobra_x = (((500/2 + 10) /10) *10) 
 cobra_y= ((((700/2) + 110) /10) *10)
 moeda_x= (round(randint(60, 390) / 10) * 10)
 moeda_y= (round(randint(320, 630)/10 ) *10 )
 x_controle = 0
 y_controle= 0
-velocidade=5
+velocidade=10
+
 Pontos=0
 Relogio= pygame.time.Clock()
 tamanho_da_cobra= 3
@@ -40,20 +43,19 @@ def Desenhando_A_Tela():
     pygame.draw.rect(tela, cores["azul"], (50, 300, 400, 350) )
     pygame.draw.line(tela, cores["branca"], (0,200), (700, 200), 4)
     pygame.draw.line(tela, cores["branca"], (0,250), (700, 250), 4)
-    
-def desenhar_cobra(lista_cobra):
-    for XeY in lista_cobra:
-        pygame.draw.rect(tela, (0,255,0), (XeY[0], XeY[1], 10, 10 ))
-    
-    
 
-#Funcionamento do Jogo
+def desenhar_cobra(lista):
+    for XeY in lista:
+        pygame.draw.rect(tela, cores["verde"], (XeY[0], XeY[1], 10, 10))
+    
+#Funcionamento do Jogo 
 while True:
-    Relogio.tick(10)
+    Relogio.tick(10)  
     Desenhando_A_Tela()
-    moedas = pygame.draw.rect(tela, cores["amarela"],(moeda_x,moeda_y,10,10))
+    pygame.draw.rect(tela, cores["amarela"], (moeda_x, moeda_y, 10, 10))
     msg= f"Pontuação: {Pontos}"
     Mensagem= texto.render(msg, True, cores["branca"])
+    tela.blit(Mensagem, (250, 200))    
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -85,21 +87,21 @@ while True:
                         y_controle = velocidade
                         x_controle = 0
 
-        cobra_x+= x_controle
-        cobra_y+= y_controle
-        if cobra_x == moeda_x and  cobra_y == moeda_y:
-            moeda_x= (round(randint(60, 390) / 10) * 10)
-            moeda_y= (round(randint(320, 630) /10 ) * 10 )
-            Pontos+= 1
+    cobra_x += x_controle
+    cobra_y += y_controle
 
-        desenhar_cobra(pixels)
-        pixels.append([cobra_x, cobra_y])
-        
-        if len(pixels) > tamanho_da_cobra:
-            del pixels[0]
-    tela.blit(Mensagem, (250, 200))
-    pygame.display.update()
+    if cobra_x == moeda_x and cobra_y == moeda_y:
+        moeda_x = (round(randint(60, 390) / 10) * 10)
+        moeda_y = (round(randint(320, 630) / 10) * 10)
+        Pontos += 1
    
-    
-
-    
+    pixels.append([cobra_x, cobra_y])
+    if len(pixels) > tamanho_da_cobra:
+        del pixels[0]
+   
+    if cobra_x < 50 or cobra_x >= 450 or cobra_y < 300 or cobra_y >= 650:
+        print("FIM DE JOGO!")
+        pygame.quit()
+        exit()
+    desenhar_cobra(pixels)
+    pygame.display.update()   
