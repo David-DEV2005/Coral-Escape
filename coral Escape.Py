@@ -22,19 +22,23 @@ tela= pygame.display.set_mode(tamanho_da_Tela)
 texto=pygame.font.SysFont('arial', 30, True, True)
 pygame.display.set_caption("Coral Escape")
 
+background_topo = pygame.image.load("background_Topo.png")  
+background_topo = pygame.transform.scale(background_topo, (500, 200))  
+
 #X e Y: 
 cobra_x = (((500/2 + 10) /10) *10) 
 cobra_y= ((((700/2) + 110) /10) *10)
 moeda_x= (round(randint(60, 390) / 10) * 10)
 moeda_y= (round(randint(320, 630)/10 ) *10 )
-Linhas_y= randint(250, 630)
+Linhas_y= (round(randint(300, 630) /10) * 10)
 x_controle = 0
 y_controle= 0
 #Variaveis diversas:
 Cond_Linha = False
 velocidade=10
 Mapa_cobra=[50,450,300,650]
-Eventos= randint(1,2)
+Mapa_azul = [(50, 300, 400, 350)]
+Eventos= randint(1,3)
 Timer= 0
 timer_segundo= 0
 qnt_de_segundos = 7
@@ -46,7 +50,7 @@ pixels= []
 
 def Desenhando_A_Tela():
     tela.fill(cores["preta"])
-    pygame.draw.rect(tela, cores["Lime"],(0,0,500,200))
+    tela.blit(background_topo, (0, 0))
     pygame.draw.rect(tela, cores["Citrus"], (0, 250 , 500, 450), 50)
     pygame.draw.rect(tela, cores["azul"], (50, 300, 400, 350) )
     pygame.draw.line(tela, cores["branca"], (0,200), (700, 200), 4)
@@ -65,13 +69,13 @@ def desenhar_linha():
 #Funcionamento do Jogo 
 while True:
     Relogio.tick(update)  
-    Eventos= randint(1,2)
     Desenhando_A_Tela()
     pygame.draw.rect(tela, cores["amarela"], (moeda_x, moeda_y, 10, 10))
     msg= f"Pontuação: {Pontos}"
     Mensagem= texto.render(msg, True, cores["branca"])
     tela.blit(Mensagem, (250, 200))    
    
+   #Timer(Funcionamento)
     if Timer < qnt_de_segundos:
         Timer+=1
     else:
@@ -81,6 +85,7 @@ while True:
     tempo = texto.render("Tempo: "+str(timer_segundo), True, cores["branca"])
     tela.blit(tempo, (50, 200)) 
     
+    #loop de eventos do Jogo
     for event in pygame.event.get():
         if event.type == QUIT:
             pygame.quit()
@@ -130,7 +135,7 @@ while True:
         exit()
     
     if timer_segundo > 1:
-        if timer_segundo  % 15 == 0:
+        if timer_segundo  % 5 == 0:
             if Eventos == 1:
                 update = 30
                 qnt_de_segundos = 37
@@ -138,8 +143,18 @@ while True:
             elif Eventos == 2:
                 Cond_Linha = True
                 timer_segundo+=1
-            
-        Eventos= randint(1,2)    
+            elif Eventos == 3:
+                tamanho_da_cobra = 6
+                timer_segundo+=1
+
+    
+    Eventos= randint(1,4)
+    if Cond_Linha == True:
+        if cobra_y >= Linhas_y  and cobra_y <= Linhas_y:
+            print("Você bateu na linha vermelha! FIM DE JOGO!")
+            pygame.quit()
+            exit()
+             
     desenhar_linha()
     desenhar_cobra(pixels)
     pygame.display.update()
