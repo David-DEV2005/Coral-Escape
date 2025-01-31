@@ -14,8 +14,8 @@ cores = {
     "verde": (0, 255, 0),
     "Lime": (128, 255, 0),
     "Citrus": (230, 193, 0),
-    "Vermelho": (255, 0, 0)
-}
+    "Vermelho": (255, 0, 0),
+    }
 
 tamanho_da_Tela= (500, 700)
 tela= pygame.display.set_mode(tamanho_da_Tela)
@@ -23,7 +23,9 @@ texto=pygame.font.SysFont('arial', 30, True, True)
 pygame.display.set_caption("Coral Escape")
 
 background_topo = pygame.image.load("background_Topo.png")  
-background_topo = pygame.transform.scale(background_topo, (500, 700))  
+background_topo = pygame.transform.scale(background_topo, (500, 700))
+mapa = pygame.image.load("Mapa-1.png")
+#mapa = pygame.transform.scale(mapa, (400, 350))
 
 #X e Y: 
 cobra_x = (((500/2 + 10) /10) *10) 
@@ -33,8 +35,11 @@ moeda_y= (round(randint(320, 630)/10 ) *10 )
 Linhas_y= (round(randint(300, 630) /10) * 10)
 x_controle = 0
 y_controle= 0
+x_mapa = 50 
+y_mapa = 300
 #Variaveis diversas:
 Cond_Linha = False
+Cond_Mapa = True
 velocidade=10
 Mapa_cobra=[50,450,300,650]
 Mapa_azul = [(50, 300, 400, 350)]
@@ -53,7 +58,7 @@ timer_moeda = 0
 def Desenhando_A_Tela():
     tela.fill(cores["preta"])
     tela.blit(background_topo, (0, 0))
-    pygame.draw.rect(tela, cores["Lime"], (50, 300, 400, 350) )
+    tela.blit(mapa, (x_mapa, y_mapa))
     
 def desenhar_cobra(lista):
     cores_cobra = [cores["Vermelho"], cores["branca"], cores["preta"]]  
@@ -64,8 +69,19 @@ def desenhar_cobra(lista):
 def desenhar_linha():
     if Cond_Linha == False:
         pass
+    
     if Cond_Linha == True:
+        
         pygame.draw.line(tela, cores["Vermelho"], (50 , Linhas_y),(450, Linhas_y), 20)
+
+def Movimento_do_Mapa():
+    global x_mapa
+    global y_mapa
+    if Cond_Mapa == False:
+        pass
+    else:
+        x_mapa += 2
+        y_mapa += 2
 
 #Funcionamento do Jogo 
 while True:
@@ -128,7 +144,7 @@ while True:
         timer_moeda= 0
     
     if cobra_x != moeda_x and cobra_y != moeda_y:
-        if timer_segundo % 5 == 0:
+        if timer_segundo > 0 and timer_segundo % 5 == 0:
             timer_moeda += 1 
         if timer_moeda == 5:
             moeda_x = (round(randint(60, 390) / 10) * 10)
@@ -146,7 +162,7 @@ while True:
         exit()
     #Eventos Aleatórios 
     if timer_segundo > 1:
-        if timer_segundo  % 5 == 0:
+        if timer_segundo  % 15 == 0:
             if len(eventos_disponiveis) > 0:
                 evento_atual= choice(eventos_disponiveis)
                 if evento_atual == 1:
@@ -159,11 +175,13 @@ while True:
                 elif evento_atual == 3:
                     tamanho_da_cobra = 6
                     timer_segundo+=1
+                '''elif evento_atual == 4: 
+                    Cond_Mapa = True'''
                 eventos_disponiveis.remove(evento_atual)
                 
     if Cond_Linha == True:
         
-        if cobra_y >= Linhas_y  and cobra_y <= Linhas_y:
+        if cobra_y >= Linhas_y - 5  and cobra_y <= Linhas_y:
             print("Você bateu na linha vermelha! FIM DE JOGO!")
             pygame.quit()
             exit()
@@ -177,7 +195,7 @@ while True:
             print("Você bateu em si mesmo! FIM DE JOGO!")
             pygame.quit()
             exit()
-
+    Movimento_do_Mapa()
     desenhar_linha()
     desenhar_cobra(pixels)
     pygame.display.update()
