@@ -51,9 +51,10 @@ Relogio= pygame.time.Clock()
 update= 10
 tamanho_da_cobra= 3
 pixels= []
-eventos_disponiveis = [1,2,3,4]
+eventos_disponiveis = [2,4]
 timer_moeda = 0
-linha = ''
+linha= ''
+
 
 def Desenhando_A_Tela():
     tela.fill(cores["preta"])
@@ -68,12 +69,12 @@ def desenhar_cobra(lista):
         pygame.draw.rect(tela, cor_atual, (XeY[0], XeY[1], 10, 10))
 
 def desenhar_linha(): 
+    global Linhas_y, linha
     if Cond_Linha == True:
-        global linha
         if Cond_Mapa== False:
             linha = pygame.draw.line(tela, cores["Vermelho"], (50 , Linhas_y),(450, Linhas_y), 20)
         if Cond_Mapa == True:
-            linha = pygame.draw.line(tela, cores["Vermelho"], (100 , Linhas_y),(400, Linhas_y), 20)
+            linha = pygame.draw.line(tela, cores["Vermelho"], (100 , Linhas_y),(400, Linhas_y), 10)
 
 def diminuição_do_Mapa():
     global mapa 
@@ -83,6 +84,7 @@ def diminuição_do_Mapa():
     if Cond_Mapa == False:
         pass
     if Cond_Mapa == True: 
+        global Cond_Linha
         caminho_mapa= os.path.join('Assets', 'mapa1.png')
         mapa = pygame.image.load(caminho_mapa)
         mapa = pygame.transform.scale(mapa, (300, 250))
@@ -90,19 +92,36 @@ def diminuição_do_Mapa():
         Mapa_cobra[1] = 400
         Mapa_cobra[2] = 350
         Mapa_cobra[3] = 600
-        caminho_mapa= os.path.join('Assets', 'mapa1.png')
-        mapa = pygame.image.load(caminho_mapa)
-        mapa = pygame.transform.scale(mapa, (300, 250))
 
-    
+def Inicio():
+    while True:
+        tela.blit(background_topo, (0, 0))
+        msg_inicio= f"Aperte Espaço para ir ao jogo!"
+        mensagem_inicio= texto.render(msg_inicio, True, cores["Vermelho"])
+        tela.blit(mensagem_inicio, (50, 400))
+
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    return
+        pygame.display.flip()
+
+def fim():
+    pass
 #Funcionamento do Jogo    
+
+Inicio()
+
 while True:
     Relogio.tick(update)  
     Desenhando_A_Tela()
     pygame.draw.rect(tela, cores["amarela"], (moeda_x, moeda_y, 10, 10))
-    msg= f"Pontuação: {Pontos}"
-    Mensagem= texto.render(msg, True, cores["branca"])
-    tela.blit(Mensagem, (250, 205))    
+    msg_timer= f"Pontuação: {Pontos}"
+    Mensagem_timer= texto.render(msg_timer, True, cores["branca"])
+    tela.blit(Mensagem_timer, (250, 205))    
 
     #Timer(Funcionamento)
     if Timer < qnt_de_segundos:
@@ -162,12 +181,21 @@ while True:
             timer_moeda= 0
 
     if cobra_x != moeda_x and cobra_y != moeda_y:
-        if timer_segundo > 0 and timer_segundo % 5 == 0:
-            timer_moeda += 1 
-        if timer_moeda == 5:
-            moeda_x = (round(randint(60, 390) / 10) * 10)
-            moeda_y = (round(randint(360, 590) / 10) * 10)
-            timer_moeda = 0
+        if Cond_Mapa == False:
+            if timer_segundo > 0 and timer_segundo % 5 == 0:
+                timer_moeda += 1 
+            if timer_moeda == 5:
+                moeda_x = (round(randint(60, 390) / 10) * 10)
+                moeda_y = (round(randint(360, 590) / 10) * 10)
+                timer_moeda = 0
+        if Cond_Mapa == True:
+            if timer_segundo > 0 and timer_segundo % 5 == 0:
+                timer_moeda += 1 
+            if timer_moeda == 5:
+                moeda_x = (round(randint(110, 390) / 10) * 10)
+                moeda_y = (round(randint(320, 630) / 10) * 10)
+                Pontos += 1
+                timer_moeda= 0
 
 
     pixels.append([cobra_x, cobra_y])
@@ -175,7 +203,7 @@ while True:
         del pixels[0]
 
     if cobra_x < Mapa_cobra[0] or cobra_x >= Mapa_cobra[1] or cobra_y < Mapa_cobra[2] or cobra_y >= Mapa_cobra[3]:
-        print("FIM DE JOGO!")
+        print("FIM DE JOGO! BATEU NAS EXTREMIDADES! ")
         pygame.quit()
         exit()
     #Eventos Aleatórios 
@@ -195,7 +223,11 @@ while True:
                     timer_segundo+=1
                 elif evento_atual == 4:
                     Cond_Mapa = True
+                    Cond_Linha = False
                     timer_segundo+=1
+                    if 2 not in eventos_disponiveis:
+                        eventos_disponiveis.append(2)
+                    Linhas_y= (round(randint(350, 580) /10) * 10)
                 
                 eventos_disponiveis.remove(evento_atual)
                 
