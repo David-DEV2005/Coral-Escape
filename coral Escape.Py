@@ -2,6 +2,7 @@ import pygame
 from pygame.locals import *
 from sys import exit
 from random import choice, randint
+import os
 
 pygame.init()
 
@@ -14,17 +15,29 @@ cores = {
     "verde": (0, 255, 0),
     "Lime": (128, 255, 0),
     "Citrus": (230, 193, 0),
-    "Vermelho": (255, 0, 0)
-}
-
+    "Vermelho": (255, 0, 0),
+    }
+#definição da Tela, janela do jogo. 
 tamanho_da_Tela= (500, 700)
 tela= pygame.display.set_mode(tamanho_da_Tela)
 texto=pygame.font.SysFont('arial', 30, True, True)
 pygame.display.set_caption("Coral Escape")
 
-background_topo = pygame.image.load("background_Topo.png")  
-background_topo = pygame.transform.scale(background_topo, (500, 700))  
-
+#Imagens 
+caminho_background= os.path.join('Assets', 'background.png')
+background = pygame.image.load(caminho_background)  
+caminho_mapa= os.path.join('Assets', 'mapa1.png')
+mapa = pygame.image.load(caminho_mapa)
+Imagem_inicio = os.path.join('Assets', 'Coral Escape.png')
+Tela_de_Inicio = pygame.image.load(Imagem_inicio)
+terremoto_load= os.path.join('Assets', 'terremoto.png')
+terremoto = pygame.image.load(terremoto_load) 
+terremoto_2_load = os.path.join('Assets', 'terremoto_2.png') 
+terremoto_2=  pygame.image.load(terremoto_2_load) 
+final_load= os.path.join('Assets', 'tela_de_fim.png')
+tela_final= pygame.image.load(final_load)
+caminho_menu= os.path.join('Assets', 'tela_de_menu.png')
+menu = pygame.image.load(caminho_menu)
 #X e Y: 
 cobra_x = (((500/2 + 10) /10) *10) 
 cobra_y= ((((700/2) + 110) /10) *10)
@@ -33,27 +46,31 @@ moeda_y= (round(randint(320, 630)/10 ) *10 )
 Linhas_y= (round(randint(300, 630) /10) * 10)
 x_controle = 0
 y_controle= 0
+
 #Variaveis diversas:
 Cond_Linha = False
+Cond_Mapa = False
 velocidade=10
 Mapa_cobra=[50,450,300,650]
-Mapa_azul = [(50, 300, 400, 350)]
-Eventos= randint(1,3)
 Timer= 0
 timer_segundo= 0
 qnt_de_segundos = 7
 Pontos=0
+Maiorpontos = 0
 Relogio= pygame.time.Clock()
 update= 10
 tamanho_da_cobra= 3
 pixels= []
 eventos_disponiveis = [1,2,3,4]
 timer_moeda = 0
+final= 0 
+msg_final= ['Morreu batendo em si mesmo!', 'Bateu nas extremidades. Doeu!', 
+'Caiu no terremoto! cuidado!']
 
 def Desenhando_A_Tela():
-    tela.fill(cores["preta"])
-    tela.blit(background_topo, (0, 0))
-    pygame.draw.rect(tela, cores["Lime"], (50, 300, 400, 350) )
+    tela.blit(background, (0, 0))
+    tela.blit (mapa, (Mapa_cobra[0], Mapa_cobra[2]))
+    
     
 def desenhar_cobra(lista):
     cores_cobra = [cores["Vermelho"], cores["branca"], cores["preta"]]  
@@ -61,38 +78,145 @@ def desenhar_cobra(lista):
         cor_atual = cores_cobra[i % len(cores_cobra)]  
         pygame.draw.rect(tela, cor_atual, (XeY[0], XeY[1], 10, 10))
 
-def desenhar_linha():
-    if Cond_Linha == False:
-        pass
-    if Cond_Linha == True:
-        pygame.draw.line(tela, cores["Vermelho"], (50 , Linhas_y),(450, Linhas_y), 20)
+def desenhar_linha(): 
+    global Linhas_y, terremoto_load, terremoto
 
-#Funcionamento do Jogo 
-while True:
-    Relogio.tick(update)  
-    Desenhando_A_Tela()
-    pygame.draw.rect(tela, cores["amarela"], (moeda_x, moeda_y, 10, 10))
-    msg= f"Pontuação: {Pontos}"
-    Mensagem= texto.render(msg, True, cores["branca"])
-    tela.blit(Mensagem, (250, 205))    
-   
-   #Timer(Funcionamento)
-    if Timer < qnt_de_segundos:
-        Timer+=1
-    else:
-        timer_segundo+=1
-        tempo = texto.render("Tempo: "+str(timer_segundo), True, cores["branca"])
-        Timer=0
-    tempo = texto.render("Tempo: "+str(timer_segundo), True, cores["branca"])
-    tela.blit(tempo, (50, 205)) 
+    if Cond_Linha == True:
+        if Cond_Mapa== False:
+            tela.blit(terremoto, (50, Linhas_y))
+        if Cond_Mapa == True:
+            tela.blit(terremoto_2, (100, Linhas_y))
+
+def diminuição_do_Mapa():
+    global mapa 
+    global caminho_mapa
+    global Linhas_y
+    if Cond_Mapa == False:
+        pass
+    if Cond_Mapa == True: 
+        global Cond_Linha
+        caminho_mapa= os.path.join('Assets', 'mapa1.png')
+        mapa = pygame.image.load(caminho_mapa)
+        mapa = pygame.transform.scale(mapa, (300, 250))
+        Mapa_cobra[0] = 100
+        Mapa_cobra[1] = 400
+        Mapa_cobra[2] = 350
+        Mapa_cobra[3] = 600
+
+def tela_menu():
+    while True:
+        tela.blit(menu, (0, 0))
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    return
+        pygame.display.flip()
+
+def Inicio():
+    while True:
+        tela.blit(Tela_de_Inicio, (0, 0))
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == KEYDOWN:
+                if event.key == K_SPACE:
+                    return
+        pygame.display.flip()
+
+def fim():
+    global Pontos, msg_final, Maiorpontos
+    while True:
+        tela.blit(tela_final, (0, 0))
+        msg_pontos= f"Pontuação: {Pontos}"
+        Mensagem_pontos= texto.render(msg_pontos, True, cores["branca"])
+        tela.blit(Mensagem_pontos, (30, 190))
+        msg_maior= f"Melhor Pontuação: {Maiorpontos}"
+        Mensagem_maior= texto.render(msg_maior, True, cores["branca"])
+        tela.blit(Mensagem_maior, (30, 230))        
+        Fim_de_jogo= f"FIM DE JOGO!"
+        Mensagem_final = texto.render(Fim_de_jogo, True, cores["branca"])
+        tela.blit(Mensagem_final, (30, 270))
+        Seu_final= f"{msg_final[final]}"
+        Mensagem_final = texto.render(Seu_final, True, cores["branca"])
+        tela.blit(Mensagem_final, (30, 310))
+        Tente_de_novo_load= f"Aperte R para voltar ao game"
+        tente_novamente = texto.render(Tente_de_novo_load, True, cores["branca"])
+        tela.blit(tente_novamente, (30, 350))
+        
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            if event.type == KEYDOWN:
+                if event.key == K_r:
+                    return 
+            
+        pygame.display.flip()
+
+def Reiniciar():
+    global cobra_x, cobra_y, x_controle, y_controle, moeda_x, moeda_y, Pontos, pixels, tamanho_da_cobra
+    global Timer, timer_segundo, timer_moeda, Cond_Linha, Cond_Mapa, eventos_disponiveis, update
+    global qnt_de_segundos, Mapa_cobra, Linhas_y, velocidade, Relogio, mapa
+
+    cobra_x = (((500/2 + 10) /10) *10) 
+    cobra_y= ((((700/2) + 110) /10) *10)
+    moeda_x= (round(randint(60, 390) / 10) * 10)
+    moeda_y= (round(randint(320, 630)/10 ) *10 )
+    Linhas_y= (round(randint(300, 630) /10) * 10)
+    x_controle = 0
+    y_controle= 0
+    Cond_Linha = False
+    Cond_Mapa = False
+    velocidade=10
+    Mapa_cobra=[50,450,300,650]
+    Timer= 0
+    timer_segundo= 0
+    qnt_de_segundos = 7
+    Pontos=0
+    Relogio= pygame.time.Clock()
+    update= 10
+    tamanho_da_cobra= 3
+    pixels= []
+    eventos_disponiveis = [1,2,3,4]
+    timer_moeda = 0
+    caminho_mapa = os.path.join('Assets', 'mapa1.png')
+    mapa = pygame.image.load(caminho_mapa)
+
+def Jogo():
+    global update, moeda_x, moeda_y, Pontos, Timer, timer_segundo, timer_moeda, x_controle, y_controle
+    global cobra_x, cobra_y, Cond_Linha, Cond_Mapa, pixels, evento_atual, eventos_disponiveis, qnt_de_segundos
+    global tamanho_da_cobra, Linhas_y, final, Maiorpontos
     
-    #loop de eventos do Jogo
-    for event in pygame.event.get():
-        if event.type == QUIT:
-            pygame.quit()
-            exit()
-        elif event.type == KEYDOWN:
-             if event.type == KEYDOWN:
+    Reiniciar()
+    Rodando = True
+    while Rodando:
+        Relogio.tick(update)  
+        Desenhando_A_Tela()
+        pygame.draw.rect(tela, cores["amarela"], (moeda_x, moeda_y, 10, 10))
+        msg_timer= f"Pontuação: {Pontos}"
+        Mensagem_timer= texto.render(msg_timer, True, cores["branca"])
+        tela.blit(Mensagem_timer, (250, 205))    
+
+        #Timer(Funcionamento)
+        if Timer < qnt_de_segundos:
+            Timer+=1
+        else:
+            timer_segundo+=1
+            tempo = texto.render("Tempo: "+str(timer_segundo), True, cores["branca"])
+            Timer=0
+        tempo = texto.render("Tempo: "+str(timer_segundo), True, cores["branca"])
+        tela.blit(tempo, (50, 205)) 
+
+        #loop de eventos do Jogo
+        for event in pygame.event.get():
+            if event.type == QUIT:
+                pygame.quit()
+                exit()
+            elif event.type == KEYDOWN:
                 if event.key == K_a:
                     if x_controle == velocidade:
                         pass
@@ -118,66 +242,107 @@ while True:
                         y_controle = velocidade
                         x_controle = 0
 
-    cobra_x += x_controle
-    cobra_y += y_controle
+        cobra_x += x_controle
+        cobra_y += y_controle
 
-    if cobra_x == moeda_x and cobra_y == moeda_y:
-        moeda_x = (round(randint(60, 390) / 10) * 10)
-        moeda_y = (round(randint(320, 630) / 10) * 10)
-        Pontos += 1
-        timer_moeda= 0
-    
-    if cobra_x != moeda_x and cobra_y != moeda_y:
-        if timer_segundo % 5 == 0:
-            timer_moeda += 1 
-        if timer_moeda == 5:
-            moeda_x = (round(randint(60, 390) / 10) * 10)
-            moeda_y = (round(randint(320, 630) / 10) * 10)
-            timer_moeda = 0
+        if cobra_x == moeda_x and cobra_y == moeda_y:
+            if Cond_Mapa == False:
+                moeda_x = (round(randint(60, 440) / 10) * 10)
+                moeda_y = (round(randint(320, 630) / 10) * 10)
+                Pontos += 1
+                timer_moeda= 0
+            if Cond_Mapa == True:
+                moeda_x = (round(randint(120, 380) / 10) * 10)
+                moeda_y = (round(randint(320, 580) / 10) * 10)
+                Pontos += 1
+                timer_moeda= 0
+
+        if cobra_x != moeda_x and cobra_y != moeda_y:
+            if Cond_Mapa == False:
+                if timer_segundo > 0 and timer_segundo % 5 == 0:
+                    timer_moeda += 1 
+                if timer_moeda == 5:
+                    moeda_x = (round(randint(60, 390) / 10) * 10)
+                    moeda_y = (round(randint(360, 590) / 10) * 10)
+                    timer_moeda = 0
+            if Cond_Mapa == True:
+                if  moeda_x < Mapa_cobra[0] or moeda_x > Mapa_cobra[1] or moeda_y < Mapa_cobra [2] or moeda_y > Mapa_cobra [3]:
+                    moeda_x = (round(randint(120, 380) / 10) * 10)
+                    moeda_y = (round(randint(320, 580) / 10) * 10)
+                if timer_segundo > 0 and timer_segundo % 5 == 0:
+                    timer_moeda += 1 
+                if timer_moeda == 5:
+                    moeda_x = (round(randint(120, 380) / 10) * 10)
+                    moeda_y = (round(randint(320, 580) / 10) * 10)
+                    Pontos += 1
+                    timer_moeda= 0
 
 
-    pixels.append([cobra_x, cobra_y])
-    if len(pixels) > tamanho_da_cobra:
-        del pixels[0]
-   
-    if cobra_x < Mapa_cobra[0] or cobra_x >= Mapa_cobra[1] or cobra_y < Mapa_cobra[2] or cobra_y >= Mapa_cobra[3]:
-        print("FIM DE JOGO!")
-        pygame.quit()
-        exit()
-    #Eventos Aleatórios 
-    if timer_segundo > 1:
-        if timer_segundo  % 5 == 0:
-            if len(eventos_disponiveis) > 0:
-                evento_atual= choice(eventos_disponiveis)
-                if evento_atual == 1:
-                    update = 30
-                    qnt_de_segundos = 37
-                    timer_segundo+=1
-                elif evento_atual == 2:
-                    Cond_Linha = True
-                    timer_segundo+=1
-                elif evento_atual == 3:
-                    tamanho_da_cobra = 6
-                    timer_segundo+=1
-                eventos_disponiveis.remove(evento_atual)
-                
-    if Cond_Linha == True:
+        pixels.append([cobra_x, cobra_y])
+        if len(pixels) > tamanho_da_cobra:
+            del pixels[0]
+
+        if cobra_x < Mapa_cobra[0] or cobra_x >= Mapa_cobra[1] or cobra_y < Mapa_cobra[2] or cobra_y >= Mapa_cobra[3]:
+            if Pontos > Maiorpontos:
+                Maiorpontos = Pontos
+            Rodando= False
+            final= 1
+            fim()
+        #Eventos Aleatórios 
+        if timer_segundo > 1:
+            if timer_segundo  % 15 == 0:
+                if len(eventos_disponiveis) > 0:
+                    evento_atual= choice(eventos_disponiveis)
+                    if evento_atual == 1:
+                        update = 30
+                        qnt_de_segundos = 37
+                        timer_segundo+=1
+                    elif evento_atual == 2:
+                        Cond_Linha = True
+                        timer_segundo+=1
+                    elif evento_atual == 3:
+                        tamanho_da_cobra = 6
+                        timer_segundo+=1
+                    elif evento_atual == 4:
+                        Cond_Mapa = True
+                        Cond_Linha = False
+                        timer_segundo+=1
+                        if 2 not in eventos_disponiveis:
+                            eventos_disponiveis.append(2)
+                        Linhas_y= (round(randint(350, 580) /10) * 10)
+                    
+                    eventos_disponiveis.remove(evento_atual)
+                    
+        if Cond_Linha == True:
+            
+            if cobra_y >= Linhas_y - 6  and cobra_y <= Linhas_y+10:
+                if Pontos > Maiorpontos:
+                    Maiorpontos = Pontos
+                final =2
+                Rodando =False
+                fim() 
+            if moeda_y+10 >= Linhas_y  and moeda_y+10 <= Linhas_y:
+                    moeda_x= (round(randint(60, 390) / 10) * 10)
+                    moeda_y= (round(randint(320, 630)/10 ) *10 )
+
+        for pixel in pixels [:-3]:
+            if pixel == [cobra_x, cobra_y]:
+                if Pontos > Maiorpontos:
+                    Maiorpontos = Pontos
+                final = 0
+                Rodando =False
+                fim()
         
-        if cobra_y >= Linhas_y  and cobra_y <= Linhas_y:
-            print("Você bateu na linha vermelha! FIM DE JOGO!")
-            pygame.quit()
-            exit()
-        
-        if moeda_y+10 >= Linhas_y  and moeda_y+10 <= Linhas_y:
-                moeda_x= (round(randint(60, 390) / 10) * 10)
-                moeda_y= (round(randint(320, 630)/10 ) *10 )
+        diminuição_do_Mapa()
+        desenhar_linha()
+        desenhar_cobra(pixels)
+        pygame.display.flip()
+def Rodar_o_jogo():
+    Inicio()
+    tela_menu()
+    while True:
+        Jogo()
 
-    for pixel in pixels [:-3]:
-        if pixel == [cobra_x, cobra_y]:
-            print("Você bateu em si mesmo! FIM DE JOGO!")
-            pygame.quit()
-            exit()
+#Funcionamento do Jogo    
+Rodar_o_jogo()
 
-    desenhar_linha()
-    desenhar_cobra(pixels)
-    pygame.display.update()
