@@ -3,10 +3,10 @@ from pygame.locals import *
 from sys import exit
 from random import choice, randint
 import os
-
 pygame.init()
 
 #Criação de Variavéis e Funções. 
+
 cores = {
     "branca": (255, 255, 255),
     "preta": (0, 0, 0),
@@ -17,6 +17,7 @@ cores = {
     "Citrus": (230, 193, 0),
     "Vermelho": (255, 0, 0),
     }
+
 #definição da Tela, janela do jogo. 
 tamanho_da_Tela= (500, 700)
 tela= pygame.display.set_mode(tamanho_da_Tela)
@@ -67,6 +68,7 @@ final= 0
 msg_final= ['Morreu batendo em si mesmo!', 'Bateu nas extremidades. Doeu!', 
 'Caiu no terremoto! cuidado!']
 
+#Todas as funções do código
 def Desenhando_A_Tela():
     tela.blit(background, (0, 0))
     tela.blit (mapa, (Mapa_cobra[0], Mapa_cobra[2]))
@@ -247,20 +249,21 @@ def Jogo():
 
         if cobra_x == moeda_x and cobra_y == moeda_y:
             if Cond_Mapa == False:
+                timer_moeda= 0
                 moeda_x = (round(randint(60, 440) / 10) * 10)
                 moeda_y = (round(randint(320, 630) / 10) * 10)
                 Pontos += 1
-                timer_moeda= 0
+                
             if Cond_Mapa == True:
+                timer_moeda= 0
                 moeda_x = (round(randint(120, 380) / 10) * 10)
                 moeda_y = (round(randint(320, 580) / 10) * 10)
-                Pontos += 1
-                timer_moeda= 0
+                Pontos += 1 
 
         if cobra_x != moeda_x and cobra_y != moeda_y:
             if Cond_Mapa == False:
                 if timer_segundo > 0 and timer_segundo % 5 == 0:
-                    timer_moeda += 1 
+                    timer_moeda += 0.1 
                 if timer_moeda == 5:
                     moeda_x = (round(randint(60, 390) / 10) * 10)
                     moeda_y = (round(randint(360, 590) / 10) * 10)
@@ -276,7 +279,6 @@ def Jogo():
                     moeda_y = (round(randint(320, 580) / 10) * 10)
                     Pontos += 1
                     timer_moeda= 0
-
 
         pixels.append([cobra_x, cobra_y])
         if len(pixels) > tamanho_da_cobra:
@@ -345,4 +347,3 @@ def Rodar_o_jogo():
 
 #Funcionamento do Jogo    
 Rodar_o_jogo()
-
