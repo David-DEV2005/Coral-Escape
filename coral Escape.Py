@@ -263,7 +263,7 @@ def Jogo():
         if cobra_x != moeda_x and cobra_y != moeda_y:
             if Cond_Mapa == False:
                 if timer_segundo > 0 and timer_segundo % 5 == 0:
-                    timer_moeda += 0.1 
+                    timer_moeda += 1 
                 if timer_moeda == 5:
                     moeda_x = (round(randint(60, 390) / 10) * 10)
                     moeda_y = (round(randint(360, 590) / 10) * 10)
